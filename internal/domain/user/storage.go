@@ -13,7 +13,7 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (c *Connection) Create(user *User) (*User, error) {
-	if err := c.db.Create(user).Error; err != nil {
+	if err := c.db.Where(User{Email: user.Email}).FirstOrCreate(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -45,7 +45,7 @@ func (c *Connection) FindBy(user *User, mode string) (*User, error) {
 
 func (c *Connection) FindAll() ([]*User, error) {
 	var users []*User
-	if err := c.db.Find(&users).Error; err != nil {
+	if err := c.db.Preload("RegistrationDetails").Find(&users).Error; err != nil {
 		return users, err
 	}
 	return users, nil

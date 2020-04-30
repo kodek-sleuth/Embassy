@@ -1,8 +1,8 @@
 package main
 
 import (
-	"embassy/internal/database"
-	"embassy/internal/routers"
+	"Embassy/internal/database"
+	"Embassy/internal/routers"
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
 	"net/http"

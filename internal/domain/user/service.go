@@ -1,18 +1,19 @@
 package user
 
-import "embassy/internal/helpers"
+import "Embassy/internal/helpers"
 
 type Service interface {
 	Create(user *User) (*User, error)
+	FindAll() ([]*User, error)
 	FindBy(user *User, mode string) (*User, error)
 	Login(user *User, password string) error
 	Update(user *User) (*User, error)
+	Delete(user *User) error
 }
 
 type service struct {
 	repo Repository
 }
-
 
 // Implement UserHandler Interface
 func NewService(repository Repository) Service {
@@ -58,6 +59,14 @@ func (u *service) Update(user *User) (*User, error) {
 	return result, nil
 }
 
+func (u *service) FindAll() ([]*User, error) {
+	result, err := u.repo.FindAll()
+	if err != nil{
+		return nil, err
+	}
+	return result, nil
+}
+
 func (u *service) FindBy(user *User, mode string) (*User, error) {
 	entity, err := u.repo.FindBy(user, mode)
 	if err != nil{
@@ -65,4 +74,12 @@ func (u *service) FindBy(user *User, mode string) (*User, error) {
 	}
 
 	return entity, nil
+}
+
+func (u *service) Delete(user *User) error {
+	err := u.repo.Delete(user)
+	if err != nil{
+		return err
+	}
+	return nil
 }

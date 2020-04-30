@@ -1,12 +1,10 @@
 {
-  "installed":
+  "web":
   {
-    "client_id":"133916384754-58tebssjtvgi3nii451gbrtor9rig446.apps.googleusercontent.com",
-    "project_id":"embassy-275512",
+    "client_id":"1079149959896-6rap1odm469hlneq42vi4hm3sirfnh9p.apps.googleusercontent.com",
+    "project_id":"aqueous-thought-267109",
     "auth_uri":"https://accounts.google.com/o/oauth2/auth",
     "token_uri":"https://oauth2.googleapis.com/token",
     "auth_provider_x509_cert_url":"https://www.googleapis.com/oauth2/v1/certs",
-    "client_secret":"o_gIdqzB9y7u_oXSQad5Z_y6",
-    "redirect_uris":["urn:ietf:wg:oauth:2.0:oob","http://localhost"]
-  }
-}
+    "client_secret":"HM7o6lSthhK1nYDqwQWBSv4m",
+    "redirect_uris":["http://127.0.0.1:5500/api/auth/google/callback"]}}
