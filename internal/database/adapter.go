@@ -13,6 +13,6 @@ func PostgresConnection() *gorm.DB {
 	if err != nil{
 		logrus.Fatal(err)
 	}
-	logrus.Info("PSQL client connected")
+	logrus.Info("Postgresql client connected")
 	return db
 }
