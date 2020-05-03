@@ -1,4 +1,4 @@
-module embassy
+module Embassy
 
 go 1.14
 
