@@ -45,7 +45,7 @@ type GoogleUser struct {
 }
 
 var googleOAuthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost:5500/api/auth/google/callback",
+	RedirectURL:  os.Getenv("GOOGLE_CALLBACK_URL"),
 	ClientID:     os.Getenv("GOOGLE_CLIENT_ID"),
 	ClientSecret: os.Getenv("GOOGLE_CLIENT_SECRET"),
 	Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email",
@@ -53,8 +53,10 @@ var googleOAuthConfig = &oauth2.Config{
 	Endpoint:     google.Endpoint,
 }
 
+//https://embassy-uganda.herokuapp.com/
+
 var faceBookOAuthConfig = &oauth2.Config{
-	RedirectURL:  "http://localhost:5500/api/auth/facebook/callback",
+	RedirectURL:  os.Getenv("FACEBOOK_CALLBACK_URL"),
 	ClientID:     os.Getenv("FACEBOOK_CLIENT_ID"),
 	ClientSecret: os.Getenv("FACEBOOK_CLIENT_SECRET"),
 	Scopes:       []string{"email"},
