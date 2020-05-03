@@ -1,7 +1,7 @@
 package news
 
 import (
-	"Embassy/internal/database"
+	"embassy/internal/database"
 	uuid "github.com/satori/go.uuid"
 )
 

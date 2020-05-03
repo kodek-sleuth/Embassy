@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"Embassy/internal/helpers"
+	"embassy/internal/helpers"
 	"net/http"
 )
 

@@ -1,4 +1,4 @@
-package news
+package chatting
 
 import (
 	"embassy/internal/middlewares"
@@ -11,21 +11,21 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 	repo := NewRepository(db)
 	service := NewService(repo)
 	handler := NewHandler(service)
-	router.Handle("/news",
+	router.Handle("/chatting",
 		negroni.New(
-			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
-			negroni.HandlerFunc(middlewares.RequireAdminRights),
-			negroni.HandlerFunc(handler.Create))).Methods("POST")
-	router.Handle("/news/{newsID}",
+			//negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
+			//negroni.HandlerFunc(middlewares.RequireAdminRights),
+			negroni.HandlerFunc(handler.Chatting)))
+	router.Handle("/chatting/{chattingID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
 			negroni.HandlerFunc(handler.Update))).Methods("PUT")
-	router.Handle("/news",
+	router.Handle("/chatting",
 		negroni.New(negroni.HandlerFunc(handler.FindAll))).Methods("GET")
-	router.Handle("/news/{newsID}",
+	router.Handle("/chatting/{chattingID}",
 		negroni.New(negroni.HandlerFunc(handler.FindById))).Methods("GET")
-	router.Handle("/news/{newsID}",
+	router.Handle("/chatting/{chattingID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireOwnerRights),

@@ -1,7 +1,7 @@
 package registration
 
 import (
-	"Embassy/internal/middlewares"
+	"embassy/internal/middlewares"
 	"github.com/codegangsta/negroni"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"

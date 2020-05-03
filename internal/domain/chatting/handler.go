@@ -1,15 +1,17 @@
-package news
+package chatting
 
 import (
 	"embassy/internal/helpers"
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 	uuid "github.com/satori/go.uuid"
+	"github.com/sirupsen/logrus"
 	"net/http"
 )
 
 type Handler interface {
-	Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
+	Chatting(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	FindAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
@@ -18,6 +20,9 @@ type Handler interface {
 
 type handler struct {
 	service Service
+	//clients map[*websocket.Conn]bool
+	//broadcast chan Chat
+
 }
 
 func NewHandler(service Service) Handler {
@@ -26,45 +31,77 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var news News
+var clients = make(map[*websocket.Conn]bool)
+var broadcast = make(chan Chat)
 
-	if err := json.NewDecoder(r.Body).Decode(&news); err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
+func HandleMessages(){
+	for {
+		msg := <- broadcast
+		logrus.Println("This is the message", msg)
+
+		// Send it out to every client that is currently connected
+		for client := range clients {
+			err := client.WriteJSON(msg)
+			if err != nil {
+				logrus.Printf("error: %v", err)
+				_ = client.Close()
+				delete(clients, client)
+			}
+		}
+	}
+}
+
+func (s *handler) Chatting(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
+	var chat Chat
+
+	// create handshake with client
+	var upgrader = websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool {
+			return true
+		},
 	}
 
-	userDetails, _ := helpers.VerifyToken(r)
-	news.UserID = userDetails.ID
-
-	result, err := s.service.Create(&news)
+	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
+		logrus.Println(err.Error())
 	}
 
-	helpers.JSONResponse(w, http.StatusCreated, result)
-	return
+	defer ws.Close()
+
+	clients[ws] = true
+
+	for {
+		if err := ws.ReadJSON(&chat); err != nil{
+			logrus.Println(err.Error())
+			delete(clients, ws)
+		}
+
+		if _, err = s.service.Create(&chat); err != nil {
+			logrus.Println(err.Error())
+		}
+
+		broadcast <- chat
+	}
 }
 
 func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var news News
-	newsID := mux.Vars(r)["newsID"]
+	var chat Chat
+	chatID := mux.Vars(r)["chatID"]
 
-	parsedNewsID, err := uuid.FromString(newsID)
+	parsedChatID, err := uuid.FromString(chatID)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&news); err != nil{
+	if err := json.NewDecoder(r.Body).Decode(&chat); err != nil{
 		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	news.ID = parsedNewsID
+	chat.ID = parsedChatID
 
-	result, err := s.service.Update(&news)
+	result, err := s.service.Update(&chat)
 	if err != nil{
 		if err.Error() == "is not owner" {
 			helpers.ErrorResponse(w, http.StatusForbidden,
@@ -80,24 +117,24 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 }
 
 func (s *handler) Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var news News
-	newsID := mux.Vars(r)["newsID"]
+	var chat Chat
+	chatID := mux.Vars(r)["chatID"]
 
-	parsedNewsID, err := uuid.FromString(newsID)
+	parsedChatID, err := uuid.FromString(chatID)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	news.ID = parsedNewsID
+	chat.ID = parsedChatID
 
-	if err = s.service.Delete(&news); err != nil {
+	if err = s.service.Delete(&chat); err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	helpers.JSONResponse(w, http.StatusNoContent, map[string]string{
-		"message": "news deleted successfully",
+		"message": "chat deleted successfully",
 	})
 	return
 }
@@ -114,16 +151,16 @@ func (s *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.Handler
 }
 
 func (s *handler) FindById(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var news News
-	newsID := mux.Vars(r)["newsID"]
-	parsedID, err := uuid.FromString(newsID)
+	var chat Chat
+	chatID := mux.Vars(r)["chatID"]
+	parsedID, err := uuid.FromString(chatID)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	news.ID = parsedID
-	result, err := s.service.FindById(&news)
+	chat.ID = parsedID
+	result, err := s.service.FindById(&chat)
 	if err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return

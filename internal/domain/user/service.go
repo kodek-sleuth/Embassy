@@ -1,6 +1,6 @@
 package user
 
-import "Embassy/internal/helpers"
+import "embassy/internal/helpers"
 
 type Service interface {
 	Create(user *User) (*User, error)

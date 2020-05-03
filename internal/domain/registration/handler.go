@@ -1,7 +1,7 @@
 package registration
 
 import (
-	"Embassy/internal/helpers"
+	"embassy/internal/helpers"
 	"encoding/json"
 	"math/rand"
 	"net/http"
