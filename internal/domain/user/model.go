@@ -1,8 +1,8 @@
 package user
 
 import (
-	"embassy/internal/database"
-	"embassy/internal/domain/registration"
+	"Embassy/internal/database"
+	"Embassy/internal/domain/registration"
 )
 
 type User struct {

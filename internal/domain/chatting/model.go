@@ -1,7 +1,7 @@
 package chatting
 
 import (
-	"embassy/internal/database"
+	"Embassy/internal/database"
 )
 
 type Chat struct {

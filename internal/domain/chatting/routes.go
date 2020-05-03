@@ -1,7 +1,7 @@
 package chatting
 
 import (
-	"embassy/internal/middlewares"
+	"Embassy/internal/middlewares"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 	"github.com/urfave/negroni"

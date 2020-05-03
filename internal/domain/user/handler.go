@@ -1,7 +1,7 @@
 package user
 
 import (
-	"embassy/internal/helpers"
+	"Embassy/internal/helpers"
 	"encoding/json"
 	"fmt"
 	"github.com/dchest/uniuri"

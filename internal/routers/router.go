@@ -1,9 +1,9 @@
 package routers
 
 import (
-	"embassy/internal/domain/chatting"
-	"embassy/internal/domain/registration"
-	"embassy/internal/domain/user"
+	"Embassy/internal/domain/chatting"
+	"Embassy/internal/domain/registration"
+	"Embassy/internal/domain/user"
 	"github.com/gorilla/mux"
 	"github.com/jinzhu/gorm"
 )

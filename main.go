@@ -1,9 +1,9 @@
 package main
 
 import (
-	"embassy/internal/database"
-	"embassy/internal/domain/chatting"
-	"embassy/internal/routers"
+	"Embassy/internal/database"
+	"Embassy/internal/domain/chatting"
+	"Embassy/internal/routers"
 	"github.com/codegangsta/negroni"
 	"github.com/sirupsen/logrus"
 	"net/http"

@@ -1,7 +1,7 @@
 package news
 
 import (
-	"embassy/internal/helpers"
+	"Embassy/internal/helpers"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"

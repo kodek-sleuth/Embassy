@@ -8,7 +8,7 @@ import (
 
 
 func PostgresConnection() *gorm.DB {
-	db, err := gorm.Open("postgres","postgres://postgres:kevina52@localhost:5432/embassy?sslmode=disable")
+	db, err := gorm.Open("postgres","postgres://postgres:kevina52@localhost:5432/Embassy?sslmode=disable")
 	if err != nil{
 		logrus.Fatal(err)
 	}

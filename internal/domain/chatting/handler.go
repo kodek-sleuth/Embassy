@@ -1,7 +1,7 @@
 package chatting
 
 import (
-	"embassy/internal/helpers"
+	"Embassy/internal/helpers"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
