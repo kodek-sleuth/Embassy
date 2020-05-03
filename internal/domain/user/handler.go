@@ -53,8 +53,6 @@ var googleOAuthConfig = &oauth2.Config{
 	Endpoint:     google.Endpoint,
 }
 
-//https://embassy-uganda.herokuapp.com/
-
 var faceBookOAuthConfig = &oauth2.Config{
 	RedirectURL:  os.Getenv("FACEBOOK_CALLBACK_URL"),
 	ClientID:     os.Getenv("FACEBOOK_CLIENT_ID"),
