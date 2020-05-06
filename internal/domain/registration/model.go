@@ -16,7 +16,7 @@ type Registration struct {
 	PassportNumber string `gorm:"type:varchar(100);not_null"`
 	City string `gorm:"type:varchar(100);not_null"`
 	Address string `gorm:"type:varchar(100);not_null"`
-	IsMarried bool `gorm:"type:boolean;not_null"`
+	Marriage string `gorm:"type:varchar(100);not_null"`
 	KinName string `gorm:"type:varchar(100);not_null"`
 	KinContact string `gorm:"type:varchar(100);not_null"`
 	KinRelationship string `gorm:"type:varchar(100);not_null"`

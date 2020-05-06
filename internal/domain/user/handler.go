@@ -5,17 +5,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dchest/uniuri"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/facebook"
 	"golang.org/x/oauth2/google"
 	"net/http"
 	"os"
+	"reflect"
 )
 
 // Methods to be consumed by handler
 type Handler interface {
-	Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	GoogleLogin(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	GoogleCallBack(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	FacebookLogin(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
@@ -160,26 +161,6 @@ func (u *handler) GoogleCallBack(w http.ResponseWriter, r *http.Request, n http.
 	return
 }
 
-func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
-	var user User
-
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	_, err := u.service.Update(&user)
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to authenticate user")
-		return
-	}
-
-	helpers.JSONResponse(w, http.StatusCreated, map[string]interface{}{
-		"message": "you have successfully registered, the registration code has been sent on your email",
-	})
-	return
-}
-
 func (u *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
 	users, err := u.service.FindAll()
 	if err != nil{
@@ -238,10 +219,12 @@ func (u *handler) Delete(w http.ResponseWriter, r *http.Request, n http.HandlerF
 func (u *handler) CreateAdmin(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var user User
 
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	result := context.Get(r, "user")
+	usr := reflect.ValueOf(result)
+
+	user.Name = usr.FieldByName("Name").String()
+	user.Email = usr.FieldByName("Email").String()
+	user.Password = usr.FieldByName("Password").String()
 
 	_, err := u.service.Create(&user)
 	if err != nil {
@@ -261,20 +244,23 @@ func (u *handler) CreateAdmin(w http.ResponseWriter, r *http.Request, n http.Han
 func (u *handler) Login(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var user User
 
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	result := context.Get(r, "user")
+	usr := reflect.ValueOf(result)
 
-	err := u.service.Login(&user, user.Password)
+	user.Email = usr.FieldByName("Email").String()
+	user.Password = usr.FieldByName("Password").String()
+
+	entity, err := u.service.Login(&user, user.Password)
 	if err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	m := map[string]interface{}{
-		"id": user.ID,
-		"email": user.Email,
+		"id": entity.ID,
+		"email": entity.Email,
+		"isVerified": entity.IsVerified,
+		"isAdmin": entity.IsAdmin,
 	}
 
 	token, err := helpers.CreateToken(m)

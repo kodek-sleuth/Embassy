@@ -7,9 +7,10 @@ import (
 
 type User struct {
 	database.Base
-	Email string `gorm:"type:varchar(100);unique_index;not_null"`
-	Password string `gorm:"type:varchar(250);"`
-	Name string `gorm:"type:varchar(250);"`
+	Image string
+	Email string `gorm:"type:varchar(100);unique_index;not_null"json:"email"`
+	Password string `gorm:"type:varchar(250);"json:"password"`
+	Name string `json:"name"`
 	IsAdmin bool `gorm:"type:boolean;default:false"`
 	IsVerified bool `gorm:"type:boolean;not_null"`
 	RegistrationDetails registration.Registration

@@ -2,7 +2,6 @@ package news
 
 import (
 	"Embassy/internal/helpers"
-	"encoding/json"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 	"net/http"
@@ -29,10 +28,16 @@ func NewHandler(service Service) Handler {
 func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var news News
 
-	if err := json.NewDecoder(r.Body).Decode(&news); err != nil{
+	news.Title = r.FormValue("title")
+	news.Body = r.FormValue("body")
+
+	files, err := helpers.FileUpload(r, []string{"cover"})
+	if err != nil{
 		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	news.Image = files["cover"]
 
 	userDetails, _ := helpers.VerifyToken(r)
 	news.UserID = userDetails.ID
@@ -57,25 +62,26 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 		return
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&news); err != nil{
+	news.Title = r.FormValue("title")
+	news.Body = r.FormValue("body")
+
+	files, err := helpers.FileUpload(r, []string{"cover"})
+	if err != nil{
 		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	news.Image = files["cover"]
 
 	news.ID = parsedNewsID
 
-	result, err := s.service.Update(&news)
+	entity, err := s.service.Update(&news)
 	if err != nil{
-		if err.Error() == "is not owner" {
-			helpers.ErrorResponse(w, http.StatusForbidden,
-				"failed to perform action, please contact administration for help")
-			return
-		}
 		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	helpers.JSONResponse(w, http.StatusAccepted, result)
+	helpers.JSONResponse(w, http.StatusAccepted, entity)
 	return
 }
 
@@ -117,6 +123,7 @@ func (s *handler) FindById(w http.ResponseWriter, r *http.Request, n http.Handle
 	var news News
 	newsID := mux.Vars(r)["newsID"]
 	parsedID, err := uuid.FromString(newsID)
+
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return

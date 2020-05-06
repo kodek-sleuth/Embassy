@@ -2,10 +2,8 @@ package registration
 
 import (
 	"Embassy/internal/helpers"
-	"encoding/json"
-	"math/rand"
+	"github.com/sirupsen/logrus"
 	"net/http"
-	"time"
 )
 
 // Methods to be consumed by handler
@@ -25,13 +23,30 @@ func NewHandler(service Service) Handler {
 }
 
 func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
-	var user Registration
-	rand.Seed(time.Now().UnixNano())
+	var registration Registration
 
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+	registration.Gender = r.FormValue("gender")
+	registration.FirstName = r.FormValue("firstname")
+	registration.Surname = r.FormValue("surname")
+	registration.PassportNumber = r.FormValue("passport_number")
+	registration.City = r.FormValue("city")
+	registration.Address = r.FormValue("address")
+	registration.Marriage = r.FormValue("marriage")
+	registration.KinName = r.FormValue("kin_name")
+	registration.KinContact = r.FormValue("kin_contact")
+	registration.KinRelationship = r.FormValue("kin_relationship")
+	registration.OriginArea = r.FormValue("origin_area")
+	registration.ArrivalDate = r.FormValue("arrival_date")
+	registration.Comment = r.FormValue("comment")
+
+	files, err := helpers.FileUpload(r, []string{"proof_of_residence", "passport_photo"})
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	registration.ProofOfResidence = files["proof_of_residence"]
+	registration.Photo = files["passport_photo"]
 
 	auth, err := helpers.VerifyToken(r)
 	if err != nil{
@@ -39,27 +54,47 @@ func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 		return
 	}
 
-	user.UserID = auth.ID
+	registration.UserID = auth.ID
 
-	_, err = u.service.Create(&user)
+	user, err := u.service.Create(&registration)
 	if err != nil{
+		logrus.Println(err)
 		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to register user")
 		return
 	}
 
 	helpers.JSONResponse(w, http.StatusCreated, map[string]interface{}{
-		"message": "you have successfully registered, the registration code has been sent on your email",
+		"message": "you have successfully registered",
+		"code": user.Code,
 	})
 	return
 }
 
 func (u *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
-	var user Registration
+	var registration Registration
 
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+	registration.Gender = r.FormValue("gender")
+	registration.FirstName = r.FormValue("firstname")
+	registration.Surname = r.FormValue("surname")
+	registration.PassportNumber = r.FormValue("passport_number")
+	registration.City = r.FormValue("city")
+	registration.Address = r.FormValue("address")
+	registration.Marriage = r.FormValue("marriage")
+	registration.KinName = r.FormValue("kin_name")
+	registration.KinContact = r.FormValue("kin_contact")
+	registration.KinRelationship = r.FormValue("kin_relationship")
+	registration.OriginArea = r.FormValue("origin_area")
+	registration.ArrivalDate = r.FormValue("arrival_date")
+	registration.Comment = r.FormValue("comment")
+
+	files, err := helpers.FileUpload(r, []string{"proof_of_residence", "passport_photo"})
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
 		return
 	}
+
+	registration.ProofOfResidence = files["proof_of_residence"]
+	registration.Photo = files["passport_photo"]
 
 	auth, err := helpers.VerifyToken(r)
 	if err != nil{
@@ -67,9 +102,9 @@ func (u *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 		return
 	}
 
-	user.UserID = auth.ID
+	registration.UserID = auth.ID
 
-	_, err = u.service.Update(&user)
+	_, err = u.service.Update(&registration)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to update user details")
 		return

@@ -2,6 +2,7 @@ package routers
 
 import (
 	"Embassy/internal/domain/chatting"
+	"Embassy/internal/domain/news"
 	"Embassy/internal/domain/registration"
 	"Embassy/internal/domain/user"
 	"github.com/gorilla/mux"
@@ -14,6 +15,7 @@ func InitRoutes(db *gorm.DB) *mux.Router {
 		&user.User{},
 		&registration.Registration{},
 		&chatting.Chat{},
+		&news.News{},
 		)
 
 	router := mux.NewRouter()
@@ -21,5 +23,6 @@ func InitRoutes(db *gorm.DB) *mux.Router {
 	newRouter = user.Routes(newRouter, db)
 	newRouter = registration.Routes(newRouter, db)
 	newRouter = chatting.Routes(newRouter, db)
+	newRouter = news.Routes(newRouter, db)
 	return newRouter
 }

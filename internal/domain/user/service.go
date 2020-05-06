@@ -6,7 +6,7 @@ type Service interface {
 	Create(user *User) (*User, error)
 	FindAll() ([]*User, error)
 	FindBy(user *User, mode string) (*User, error)
-	Login(user *User, password string) error
+	Login(user *User, password string) (*User, error)
 	Update(user *User) (*User, error)
 	Delete(user *User) error
 }
@@ -37,18 +37,18 @@ func (u *service) Create(user *User) (*User, error) {
 	return result, nil
 }
 
-func(u *service) Login(user *User, password string) error {
+func(u *service) Login(user *User, password string) (*User, error) {
 	entity, err := u.repo.FindBy(user, "email")
 	if err != nil{
-		return err
+		return nil, err
 	}
 
 	err = helpers.CompareHash(entity.Password, password)
 	if err != nil{
-		return err
+		return entity, err
 	}
 
-	return nil
+	return entity, nil
 }
 
 func (u *service) Update(user *User) (*User, error) {
