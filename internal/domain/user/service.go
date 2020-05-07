@@ -9,6 +9,7 @@ type Service interface {
 	Login(user *User, password string) (*User, error)
 	Update(user *User) (*User, error)
 	Delete(user *User) error
+	GetAll() (map[string]interface{}, error)
 }
 
 type service struct {
@@ -82,4 +83,13 @@ func (u *service) Delete(user *User) error {
 		return err
 	}
 	return nil
+}
+
+func (u *service) GetAll() (map[string]interface{}, error) {
+	entity, err := u.repo.GetAll()
+	if err != nil{
+		return nil, err
+	}
+
+	return entity, nil
 }

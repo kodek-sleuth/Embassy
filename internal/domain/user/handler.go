@@ -26,6 +26,7 @@ type Handler interface {
 	Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	CreateAdmin(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	Login(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
+	GetAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 }
 
 type handler struct {
@@ -275,5 +276,21 @@ func (u *handler) Login(w http.ResponseWriter, r *http.Request, n http.HandlerFu
 		"Email": user.Email,
 		"Name": user.Name,
 	})
+	return
+}
+
+func (u *handler) GetAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
+	var user User
+
+	userDetails, _ := helpers.VerifyToken(r)
+	user.ID = userDetails.ID
+
+	entity, err := u.service.GetAll()
+	if err != nil {
+		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to fetch data")
+		return
+	}
+
+	helpers.JSONResponse(w, http.StatusOK, entity)
 	return
 }

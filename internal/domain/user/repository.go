@@ -6,4 +6,5 @@ type Repository interface {
 	FindBy(user *User, mode string) (*User, error)
 	FindAll()([]*User, error)
 	Update(user *User) (*User, error)
+	GetAll() (map[string]interface{}, error)
 }

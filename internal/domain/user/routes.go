@@ -41,6 +41,11 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
 			negroni.HandlerFunc(handler.FindAll),
 			)).Methods("GET")
+	router.Handle("/all",
+		negroni.New(
+			negroni.HandlerFunc(middlewares.RequireAdminRights),
+			negroni.HandlerFunc(handler.GetAll),
+		)).Methods("GET")
 	router.Handle("/user/{userID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
