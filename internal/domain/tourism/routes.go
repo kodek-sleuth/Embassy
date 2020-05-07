@@ -1,4 +1,4 @@
-package news
+package tourism
 
 import (
 	"Embassy/internal/middlewares"
@@ -12,23 +12,23 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 	repo := NewRepository(db)
 	service := NewService(repo)
 	handler := NewHandler(service)
-	router.Handle("/news",
+	router.Handle("/tourism",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
-			negroni.HandlerFunc(validations.ReturnHandler(db).InputNews),
+			negroni.HandlerFunc(validations.ReturnHandler(db).InputTourism),
 			negroni.HandlerFunc(handler.Create))).Methods("POST")
-	router.Handle("/news/{newsID}",
+	router.Handle("/tourism/{tourismID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
-			negroni.HandlerFunc(validations.ReturnHandler(db).InputNews),
+			negroni.HandlerFunc(validations.ReturnHandler(db).InputTourism),
 			negroni.HandlerFunc(handler.Update))).Methods("PUT")
-	router.Handle("/news",
+	router.Handle("/tourism",
 		negroni.New(negroni.HandlerFunc(handler.FindAll))).Methods("GET")
-	router.Handle("/news/{newsID}",
+	router.Handle("/tourism/{tourismID}",
 		negroni.New(negroni.HandlerFunc(handler.FindById))).Methods("GET")
-	router.Handle("/news/{newsID}",
+	router.Handle("/tourism/{tourismID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireOwnerRights),

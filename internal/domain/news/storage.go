@@ -15,25 +15,25 @@ func NewRepository(db *gorm.DB) Repository {
 	return &Connection{db,}
 }
 
-func (c Connection) Create(food *News) (*News, error) {
+func (c Connection) Create(news *News) (*News, error) {
 	// Insert into menu if not ready there
-	if err := c.db.Create(food).Error; err != nil{
+	if err := c.db.Create(news).Error; err != nil{
 		return nil, err
 	}
-	return food, nil
+	return news, nil
 }
 
-func (c Connection) Update(food *News) (*News, error) {
+func (c Connection) Update(news *News) (*News, error) {
 	// Update News
-	if err := c.db.Model(food).Updates(food).Error; err != nil {
+	if err := c.db.Model(news).Updates(news).Error; err != nil {
 		return nil, err
 	}
 
-	return food, nil
+	return news, nil
 }
 
-func (c Connection) Delete(food *News) error {
-	err := c.db.Where("id = ?", food.ID).Delete(News{}).Error
+func (c Connection) Delete(news *News) error {
+	err := c.db.Where("id = ?", news.ID).Delete(News{}).Error
 	if err != nil {
 		return err
 	}
@@ -41,19 +41,19 @@ func (c Connection) Delete(food *News) error {
 }
 
 func (c Connection) FindAll() ([]*News, error) {
-	var foods []*News
-	err := c.db.Find(&foods).Error
+	var news []*News
+	err := c.db.Find(&news).Error
 	if err != nil{
 		return nil, err
 	}
-	return foods, nil
+	return news, nil
 }
 
-func (c Connection) FindById(food *News) (*News, error) {
-	err := c.db.Where("id = ?", food.ID).First(&food).Error
+func (c Connection) FindById(news *News) (*News, error) {
+	err := c.db.Where("id = ?", news.ID).First(&news).Error
 	if err != nil {
-		return food, err
+		return news, err
 	}
-	return food, nil
+	return news, nil
 }
 

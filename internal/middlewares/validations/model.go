@@ -48,3 +48,27 @@ type News struct {
 	Body string `json:"body"`
 	UserID uuid.UUID
 }
+
+type Tourism struct {
+	ID uuid.UUID
+	Image string `json:"image"`
+	Title string `json:"title"`
+	Body string `json:"body"`
+	UserID uuid.UUID
+}
+
+type Education struct {
+	ID uuid.UUID
+	Image string `json:"image"`
+	Title string `json:"title"`
+	Body string `json:"body"`
+	UserID uuid.UUID
+}
+
+type Notice struct {
+	ID uuid.UUID
+	Image string `json:"image"`
+	Title string `json:"title"`
+	Body string `json:"body"`
+	UserID uuid.UUID
+}
