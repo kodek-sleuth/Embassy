@@ -29,7 +29,11 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	var education Education
 
 	education.Title = r.FormValue("title")
-	education.Body = r.FormValue("body")
+	str, err := helpers.ParseNodes(r.FormValue("body"))
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	files, err := helpers.FileUpload(r, []string{"cover"})
 	if err != nil{
@@ -38,6 +42,7 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	}
 
 	education.Image = files["cover"]
+	education.Body = str
 
 	userDetails, _ := helpers.VerifyToken(r)
 	education.UserID = userDetails.ID
@@ -63,7 +68,11 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	}
 
 	education.Title = r.FormValue("title")
-	education.Body = r.FormValue("body")
+	str, err := helpers.ParseNodes(r.FormValue("body"))
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	files, err := helpers.FileUpload(r, []string{"cover"})
 	if err != nil{
@@ -72,6 +81,7 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	}
 
 	education.Image = files["cover"]
+	education.Body = str
 
 	education.ID = parsedEducationID
 

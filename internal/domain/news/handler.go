@@ -4,6 +4,8 @@ import (
 	"Embassy/internal/helpers"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
+	//"github.com/sirupsen/logrus"
+	//"golang.org/x/net/html"
 	"net/http"
 )
 
@@ -29,7 +31,12 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	var news News
 
 	news.Title = r.FormValue("title")
-	news.Body = r.FormValue("body")
+
+	str, err := helpers.ParseNodes(r.FormValue("body"))
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	files, err := helpers.FileUpload(r, []string{"cover"})
 	if err != nil{
@@ -37,6 +44,7 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 		return
 	}
 
+	news.Body = str
 	news.Image = files["cover"]
 
 	userDetails, _ := helpers.VerifyToken(r)
@@ -63,7 +71,11 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	}
 
 	news.Title = r.FormValue("title")
-	news.Body = r.FormValue("body")
+	str, err := helpers.ParseNodes(r.FormValue("body"))
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
+		return
+	}
 
 	files, err := helpers.FileUpload(r, []string{"cover"})
 	if err != nil{
@@ -72,6 +84,7 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	}
 
 	news.Image = files["cover"]
+	news.Body = str
 
 	news.ID = parsedNewsID
 
