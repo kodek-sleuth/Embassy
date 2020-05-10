@@ -1,10 +1,7 @@
 package user
 
 import (
-	"Embassy/internal/domain/education"
-	news2 "Embassy/internal/domain/news"
-	"Embassy/internal/domain/notice"
-	tourism2 "Embassy/internal/domain/tourism"
+	pages2 "Embassy/internal/domain/pages"
 	"github.com/jinzhu/gorm"
 )
 
@@ -66,32 +63,14 @@ func (c *Connection) Update(user *User) (*User, error) {
 
 func (c *Connection) GetAll() (map[string]interface{}, error){
 	var _ User
-	var notices []notice.Notice
-	var educa []education.Education
-	var tourism []tourism2.Tourism
-	var news []news2.News
 
-	if err := c.db.Find(&notices).Error; err != nil {
+	var pages []pages2.Pages
+
+	if err := c.db.Find(&pages).Error; err != nil {
 		return nil, err
 	}
-
-	if err := c.db.Find(&educa).Error; err != nil {
-		return nil, err
-	}
-
-	if err := c.db.Find(&tourism).Error; err != nil {
-		return nil, err
-	}
-
-	if err := c.db.Find(&news).Error; err != nil {
-		return nil, err
-	}
-
 
 	return map[string]interface{}{
-		"tourism": tourism,
-		"education": educa,
-		"news": news,
-		"notices": notices,
+		"pages": pages,
 	}, nil
 }

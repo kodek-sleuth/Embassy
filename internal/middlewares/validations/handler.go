@@ -96,28 +96,7 @@ func (s *handler) InputLogin(w http.ResponseWriter, r *http.Request, next http.H
 func (s *handler) InputRegistration(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	var registration Registration
 
-	registration.Gender = r.FormValue("gender")
-	registration.FirstName = r.FormValue("firstname")
-	registration.Surname = r.FormValue("surname")
-	registration.PassportNumber = r.FormValue("passport_number")
-	registration.City = r.FormValue("city")
-	registration.Address = r.FormValue("address")
-	registration.Marriage = r.FormValue("marriage")
-	registration.KinName = r.FormValue("kin_name")
-	registration.KinContact = r.FormValue("kin_contact")
-	registration.KinRelationship = r.FormValue("kin_relationship")
-	registration.OriginArea = r.FormValue("origin_area")
-	registration.ArrivalDate = r.FormValue("arrival_date")
-	registration.Comment = r.FormValue("comment")
-
-	files, err := helpers.FileUpload(r, []string{"proof_of_residence", "passport_photo"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	registration.ProofOfResidence = files["proof_of_residence"]
-	registration.Photo = files["passport_photo"]
+	err := json.NewDecoder(r.Body).Decode(&registration)
 
 	err = validation.ValidateStruct(&registration,
 		validation.Field(&registration.Gender, validation.Required.Error("please provide a gender")),
@@ -141,6 +120,8 @@ func (s *handler) InputRegistration(w http.ResponseWriter, r *http.Request, next
 		})
 		return
 	}
+
+	context.Set(r, "user", registration)
 
 	next(w, r)
 
@@ -175,7 +156,7 @@ func (s *handler) InputNews(w http.ResponseWriter, r *http.Request, next http.Ha
 		return
 	}
 
-	context.Set(r, "news", news)
+	context.Set(r, "pages", news)
 
 	next(w, r)
 

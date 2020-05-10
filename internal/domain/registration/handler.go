@@ -2,8 +2,10 @@ package registration
 
 import (
 	"Embassy/internal/helpers"
+	"github.com/gorilla/context"
 	"github.com/sirupsen/logrus"
 	"net/http"
+	"reflect"
 )
 
 // Methods to be consumed by handler
@@ -25,28 +27,24 @@ func NewHandler(service Service) Handler {
 func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
 	var registration Registration
 
-	registration.Gender = r.FormValue("gender")
-	registration.FirstName = r.FormValue("firstname")
-	registration.Surname = r.FormValue("surname")
-	registration.PassportNumber = r.FormValue("passport_number")
-	registration.City = r.FormValue("city")
-	registration.Address = r.FormValue("address")
-	registration.Marriage = r.FormValue("marriage")
-	registration.KinName = r.FormValue("kin_name")
-	registration.KinContact = r.FormValue("kin_contact")
-	registration.KinRelationship = r.FormValue("kin_relationship")
-	registration.OriginArea = r.FormValue("origin_area")
-	registration.ArrivalDate = r.FormValue("arrival_date")
-	registration.Comment = r.FormValue("comment")
+	result := context.Get(r, "user")
+	usr := reflect.ValueOf(result)
 
-	files, err := helpers.FileUpload(r, []string{"proof_of_residence", "passport_photo"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	registration.ProofOfResidence = files["proof_of_residence"]
-	registration.Photo = files["passport_photo"]
+	registration.Gender = usr.FieldByName("Gender").String()
+	registration.FirstName = usr.FieldByName("FirstName").String()
+	registration.Surname = usr.FieldByName("Surname").String()
+	registration.PassportNumber = usr.FieldByName("PassportNumber").String()
+	registration.City = usr.FieldByName("City").String()
+	registration.Address = usr.FieldByName("Address").String()
+	registration.Marriage = usr.FieldByName("Marriage").String()
+	registration.KinName = usr.FieldByName("KinName").String()
+	registration.KinContact = usr.FieldByName("KinContact").String()
+	registration.KinRelationship = usr.FieldByName("KinRelationship").String()
+	registration.OriginArea = usr.FieldByName("OriginArea").String()
+	registration.ArrivalDate = usr.FieldByName("ArrivalDate").String()
+	registration.Comment = usr.FieldByName("Comment").String()
+	registration.ProofOfResidence = usr.FieldByName("ProofOfResidence").String()
+	registration.Photo = usr.FieldByName("Photo").String()
 
 	auth, err := helpers.VerifyToken(r)
 	if err != nil{
@@ -73,28 +71,24 @@ func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 func (u *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
 	var registration Registration
 
-	registration.Gender = r.FormValue("gender")
-	registration.FirstName = r.FormValue("firstname")
-	registration.Surname = r.FormValue("surname")
-	registration.PassportNumber = r.FormValue("passport_number")
-	registration.City = r.FormValue("city")
-	registration.Address = r.FormValue("address")
-	registration.Marriage = r.FormValue("marriage")
-	registration.KinName = r.FormValue("kin_name")
-	registration.KinContact = r.FormValue("kin_contact")
-	registration.KinRelationship = r.FormValue("kin_relationship")
-	registration.OriginArea = r.FormValue("origin_area")
-	registration.ArrivalDate = r.FormValue("arrival_date")
-	registration.Comment = r.FormValue("comment")
+	result := context.Get(r, "user")
+	usr := reflect.ValueOf(result)
 
-	files, err := helpers.FileUpload(r, []string{"proof_of_residence", "passport_photo"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	registration.ProofOfResidence = files["proof_of_residence"]
-	registration.Photo = files["passport_photo"]
+	registration.Gender = usr.FieldByName("Gender").String()
+	registration.FirstName = usr.FieldByName("FirstName").String()
+	registration.Surname = usr.FieldByName("Surname").String()
+	registration.PassportNumber = usr.FieldByName("PassportNumber").String()
+	registration.City = usr.FieldByName("City").String()
+	registration.Address = usr.FieldByName("Address").String()
+	registration.Marriage = usr.FieldByName("Marriage").String()
+	registration.KinName = usr.FieldByName("KinName").String()
+	registration.KinContact = usr.FieldByName("KinContact").String()
+	registration.KinRelationship = usr.FieldByName("KinRelationship").String()
+	registration.OriginArea = usr.FieldByName("OriginArea").String()
+	registration.ArrivalDate = usr.FieldByName("ArrivalDate").String()
+	registration.Comment = usr.FieldByName("Comment").String()
+	registration.ProofOfResidence = usr.FieldByName("ProofOfResidence").String()
+	registration.Photo = usr.FieldByName("Photo").String()
 
 	auth, err := helpers.VerifyToken(r)
 	if err != nil{
@@ -104,9 +98,10 @@ func (u *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	registration.UserID = auth.ID
 
-	_, err = u.service.Update(&registration)
+	_, err = u.service.Create(&registration)
 	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to update user details")
+		logrus.Println(err)
+		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to update user")
 		return
 	}
 

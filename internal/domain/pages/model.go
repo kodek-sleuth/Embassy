@@ -1,13 +1,13 @@
-package notice
+package pages
 
 import (
 	"Embassy/internal/database"
 	uuid "github.com/satori/go.uuid"
 )
 
-type Notice struct {
+type Pages struct {
 	database.Base
-	Image string `gorm:"type:varchar(100);not_null"`
+	Type string `gorm:"type:varchar(100);not_null;unique_index"`
 	Title string `gorm:"type:varchar(100);not_null"`
 	Body string `gorm:"type:varchar(100);not_null"`
 	UserID uuid.UUID `gorm:"type:uuid;not_null"`

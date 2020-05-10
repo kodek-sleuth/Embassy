@@ -3,7 +3,7 @@ package user
 import (
 	"Embassy/internal/database"
 	"Embassy/internal/domain/education"
-	"Embassy/internal/domain/news"
+	"Embassy/internal/domain/pages"
 	"Embassy/internal/domain/notice"
 	"Embassy/internal/domain/registration"
 	"Embassy/internal/domain/tourism"
@@ -21,5 +21,5 @@ type User struct {
 	Notice []notice.Notice
 	Education []education.Education
 	Tourism []tourism.Tourism
-	News []news.News
+	News []pages.News
 }

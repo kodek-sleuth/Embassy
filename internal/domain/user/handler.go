@@ -149,6 +149,7 @@ func (u *handler) GoogleCallBack(w http.ResponseWriter, r *http.Request, n http.
 		"id": result.ID,
 		"email": result.Email,
 		"name": result.Name,
+		"isAdmin": result.IsAdmin,
 	}
 
 	token, err := helpers.CreateToken(m)

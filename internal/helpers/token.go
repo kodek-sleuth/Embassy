@@ -42,8 +42,6 @@ func CreateToken(payload map[string]interface{}) (string, error) {
 		ID: parsedUserID,
 		Email: load.Get("email").Str(),
 		Name: load.Get("name").Str(),
-		IsRestaurantOwner: load.Get("isRestaurantOwner").Bool(),
-		IsDelivery: load.Get("isDeliver").Bool(),
 		IsAdmin: load.Get("isAdmin").Bool(),
 		StandardClaims: jwt.StandardClaims{
 			// In JWT, the expiry time is expressed as unix milliseconds

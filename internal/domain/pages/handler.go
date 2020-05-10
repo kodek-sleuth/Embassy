@@ -1,9 +1,14 @@
-package notice
+package pages
 
 import (
 	"Embassy/internal/helpers"
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
+	"reflect"
+
+	//"github.com/sirupsen/logrus"
+	//"golang.org/x/net/html"
 	"net/http"
 )
 
@@ -26,28 +31,18 @@ func NewHandler(service Service) Handler {
 }
 
 func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var notice Notice
+	var pages Pages
 
-	notice.Title = r.FormValue("title")
-	str, err := helpers.ParseNodes(r.FormValue("body"))
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
+	result := context.Get(r, "pages")
+	pgs := reflect.ValueOf(result)
 
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	notice.Image = files["cover"]
-	notice.Body = str
+	pages.Title = pgs.FieldByName("Title").String()
+	pages.Body = pgs.FieldByName("Body").String()
 
 	userDetails, _ := helpers.VerifyToken(r)
-	notice.UserID = userDetails.ID
+	pages.UserID = userDetails.ID
 
-	result, err := s.service.Create(&notice)
+	result, err := s.service.Create(&pages)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
@@ -58,62 +53,46 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 }
 
 func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var notice Notice
-	noticeID := mux.Vars(r)["noticeID"]
+	var pages Pages
 
-	parsedNoticeID, err := uuid.FromString(noticeID)
+	result := context.Get(r, "pages")
+	pgs := reflect.ValueOf(result)
+
+	pages.Title = pgs.FieldByName("Title").String()
+	pages.Body = pgs.FieldByName("Body").String()
+
+	userDetails, _ := helpers.VerifyToken(r)
+	pages.UserID = userDetails.ID
+
+	result, err := s.service.Update(&pages)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	notice.Title = r.FormValue("title")
-	str, err := helpers.ParseNodes(r.FormValue("body"))
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	notice.Image = files["cover"]
-	notice.Body = str
-
-	notice.ID = parsedNoticeID
-
-	entity, err := s.service.Update(&notice)
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, err.Error())
-		return
-	}
-
-	helpers.JSONResponse(w, http.StatusAccepted, entity)
+	helpers.JSONResponse(w, http.StatusCreated, result)
 	return
 }
 
 func (s *handler) Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var notice Notice
-	noticeID := mux.Vars(r)["noticeID"]
+	var pages Pages
+	pagesID := mux.Vars(r)["pagesID"]
 
-	parsedNoticeID, err := uuid.FromString(noticeID)
+	parsedPagesID, err := uuid.FromString(pagesID)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	notice.ID = parsedNoticeID
+	pages.ID = parsedPagesID
 
-	if err = s.service.Delete(&notice); err != nil {
+	if err = s.service.Delete(&pages); err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	helpers.JSONResponse(w, http.StatusNoContent, map[string]string{
-		"message": "notice deleted successfully",
+		"message": "pages deleted successfully",
 	})
 	return
 }
@@ -130,17 +109,17 @@ func (s *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.Handler
 }
 
 func (s *handler) FindById(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var notice Notice
-	noticeID := mux.Vars(r)["noticeID"]
-	parsedID, err := uuid.FromString(noticeID)
+	var pages Pages
+	pagesID := mux.Vars(r)["pagesID"]
+	parsedID, err := uuid.FromString(pagesID)
 
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	notice.ID = parsedID
-	result, err := s.service.FindById(&notice)
+	pages.ID = parsedID
+	result, err := s.service.FindById(&pages)
 	if err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
