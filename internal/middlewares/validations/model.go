@@ -41,33 +41,8 @@ type Registration struct {
 	Code string `json:"code"`
 }
 
-type News struct {
+type Pages struct {
 	ID uuid.UUID
-	Image string `json:"image"`
-	Title string `json:"title"`
-	Body string `json:"body"`
-	UserID uuid.UUID
-}
-
-type Tourism struct {
-	ID uuid.UUID
-	Image string `json:"image"`
-	Title string `json:"title"`
-	Body string `json:"body"`
-	UserID uuid.UUID
-}
-
-type Education struct {
-	ID uuid.UUID
-	Image string `json:"image"`
-	Title string `json:"title"`
-	Body string `json:"body"`
-	UserID uuid.UUID
-}
-
-type Notice struct {
-	ID uuid.UUID
-	Image string `json:"image"`
 	Title string `json:"title"`
 	Body string `json:"body"`
 	UserID uuid.UUID

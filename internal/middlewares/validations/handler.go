@@ -129,24 +129,14 @@ func (s *handler) InputRegistration(w http.ResponseWriter, r *http.Request, next
 }
 
 
-func (s *handler) InputNews(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	var news News
+func (s *handler) InputPages(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+	var pages Pages
 
-	news.Title = r.FormValue("title")
-	news.Body = r.FormValue("body")
+	err := json.NewDecoder(r.Body).Decode(&pages)
 
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, "failed to upload photo")
-		return
-	}
-
-	news.Image = files["cover"]
-
-	err = validation.ValidateStruct(&news,
-		validation.Field(&news.Title, validation.Required.Error("title is required")),
-		validation.Field(&news.Body, validation.Required.Error("notice is required")),
-		validation.Field(&news.Image, validation.Required.Error("cover photo is required")),
+	err = validation.ValidateStruct(&pages,
+		validation.Field(&pages.Title, validation.Required.Error("title is required")),
+		validation.Field(&pages.Body, validation.Required.Error("notice is required")),
 	)
 
 	if err != nil{
@@ -156,110 +146,12 @@ func (s *handler) InputNews(w http.ResponseWriter, r *http.Request, next http.Ha
 		return
 	}
 
-	context.Set(r, "pages", news)
+	context.Set(r, "pages", pages)
 
 	next(w, r)
 
 	return
 }
-
-func (s *handler) InputNotice(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	var notice Notice
-
-	notice.Title = r.FormValue("title")
-	notice.Body = r.FormValue("body")
-
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, "failed to upload photo")
-		return
-	}
-
-	notice.Image = files["cover"]
-
-	err = validation.ValidateStruct(&notice,
-		validation.Field(&notice.Title, validation.Required.Error("title is required")),
-		validation.Field(&notice.Body, validation.Required.Error("notice is required")),
-		validation.Field(&notice.Image, validation.Required.Error("cover photo is required")),
-	)
-
-	if err != nil{
-		helpers.JSONResponse(w, http.StatusBadRequest, map[string]interface{}{
-			"errors": err,
-		})
-		return
-	}
-
-	next(w, r)
-
-	return
-}
-
-func (s *handler) InputEducation(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	var education Education
-
-	education.Title = r.FormValue("title")
-	education.Body = r.FormValue("body")
-
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, "failed to upload photo")
-		return
-	}
-
-	education.Image = files["cover"]
-
-	err = validation.ValidateStruct(&education,
-		validation.Field(&education.Title, validation.Required.Error("title is required")),
-		validation.Field(&education.Body, validation.Required.Error("notice is required")),
-		validation.Field(&education.Image, validation.Required.Error("cover photo is required")),
-	)
-
-	if err != nil{
-		helpers.JSONResponse(w, http.StatusBadRequest, map[string]interface{}{
-			"errors": err,
-		})
-		return
-	}
-
-	next(w, r)
-
-	return
-}
-
-func (s *handler) InputTourism(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	var tourism Tourism
-
-	tourism.Title = r.FormValue("title")
-	tourism.Body = r.FormValue("body")
-
-	files, err := helpers.FileUpload(r, []string{"cover"})
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusBadRequest, "failed to upload photo")
-		return
-	}
-
-	tourism.Image = files["cover"]
-
-	err = validation.ValidateStruct(&tourism,
-		validation.Field(&tourism.Title, validation.Required.Error("title is required")),
-		validation.Field(&tourism.Body, validation.Required.Error("notice is required")),
-		validation.Field(&tourism.Image, validation.Required.Error("cover photo is required")),
-	)
-
-	if err != nil{
-		helpers.JSONResponse(w, http.StatusBadRequest, map[string]interface{}{
-			"errors": err,
-		})
-		return
-	}
-
-	next(w, r)
-
-	return
-}
-
-
 
 func (s *handler) InputMessage(w http.ResponseWriter, r *http.Request, n http.HandlerFunc) {
 	panic("implement me")
