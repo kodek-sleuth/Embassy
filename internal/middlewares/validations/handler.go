@@ -18,10 +18,7 @@ type Handler interface {
 	InputLogin(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
 	InputRegistration(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
 	InputMessage(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
-	InputNews(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
-	InputTourism(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
-	InputEducation(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
-	InputNotice(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
+	InputPages(w http.ResponseWriter, r *http.Request, next http.HandlerFunc)
 }
 
 type handler struct {

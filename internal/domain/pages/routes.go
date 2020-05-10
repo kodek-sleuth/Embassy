@@ -16,13 +16,13 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
-			negroni.HandlerFunc(validations.ReturnHandler(db).InputNews),
+			negroni.HandlerFunc(validations.ReturnHandler(db).InputPages),
 			negroni.HandlerFunc(handler.Create))).Methods("POST")
 	router.Handle("/pages/{pagesID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
 			negroni.HandlerFunc(middlewares.RequireAdminRights),
-			negroni.HandlerFunc(validations.ReturnHandler(db).InputNews),
+			negroni.HandlerFunc(validations.ReturnHandler(db).InputPages),
 			negroni.HandlerFunc(handler.Update))).Methods("PUT")
 	router.Handle("/pages",
 		negroni.New(negroni.HandlerFunc(handler.FindAll))).Methods("GET")
