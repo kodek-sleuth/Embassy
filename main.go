@@ -6,6 +6,7 @@ import (
 	"Embassy/internal/routers"
 	"fmt"
 	"github.com/codegangsta/negroni"
+	"github.com/gorilla/handlers"
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
@@ -20,8 +21,14 @@ func main() {
 
 	go chatting.HandleMessages()
 
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Origin", "Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	logrus.Info("Server is running")
-	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")), n)
+	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")),
+		handlers.CORS(originsOk, headersOk, methodsOk)(n))
+
 	if err != nil{
 		logrus.Fatal(err)
 	}
