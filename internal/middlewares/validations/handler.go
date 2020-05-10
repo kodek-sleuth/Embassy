@@ -136,7 +136,8 @@ func (s *handler) InputPages(w http.ResponseWriter, r *http.Request, next http.H
 
 	err = validation.ValidateStruct(&pages,
 		validation.Field(&pages.Title, validation.Required.Error("title is required")),
-		validation.Field(&pages.Body, validation.Required.Error("notice is required")),
+		validation.Field(&pages.Body, validation.Required.Error("body is required")),
+		validation.Field(&pages.Type, validation.Required.Error("page type is required")),
 	)
 
 	if err != nil{

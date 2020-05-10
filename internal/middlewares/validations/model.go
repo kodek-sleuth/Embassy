@@ -43,6 +43,7 @@ type Registration struct {
 
 type Pages struct {
 	ID uuid.UUID
+	Type string `json:"type"`
 	Title string `json:"title"`
 	Body string `json:"body"`
 	UserID uuid.UUID
