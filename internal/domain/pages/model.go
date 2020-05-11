@@ -7,8 +7,8 @@ import (
 
 type Pages struct {
 	database.Base
-	Type string `gorm:"type:varchar(100);not_null;unique_index"`
-	Title string `gorm:"type:varchar(100);not_null"`
-	Body string `gorm:"type:varchar(100);not_null"`
+	Type string `gorm:"type:varchar;not_null;unique"`
+	Title string `gorm:"type:varchar;not_null"`
+	Body string `gorm:"type:text;not_null"`
 	UserID uuid.UUID `gorm:"type:uuid;not_null"`
 }

@@ -149,7 +149,7 @@ func (u *handler) GoogleCallBack(w http.ResponseWriter, r *http.Request, n http.
 		"id": result.ID,
 		"email": result.Email,
 		"name": result.Name,
-		"isAdmin": result.IsAdmin,
+		"is_admin": result.IsAdmin,
 	}
 
 	token, err := helpers.CreateToken(m)
@@ -262,7 +262,7 @@ func (u *handler) Login(w http.ResponseWriter, r *http.Request, n http.HandlerFu
 		"id": entity.ID,
 		"email": entity.Email,
 		"isVerified": entity.IsVerified,
-		"isAdmin": entity.IsAdmin,
+		"is_admin": entity.IsAdmin,
 	}
 
 	token, err := helpers.CreateToken(m)

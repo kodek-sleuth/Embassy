@@ -15,9 +15,7 @@ type Claims struct {
 	ID uuid.UUID `json:"id"`
 	Email string `json:"email"`
 	Name string `json:"name"`
-	IsRestaurantOwner bool `json:"is_RestaurantOwner"`
-	IsDelivery bool `json:"isDelivery"`
-	IsAdmin bool `json:"isAdmin"`
+	IsAdmin bool `json:"is_admin"`
 	jwt.StandardClaims
 }
 
@@ -25,8 +23,6 @@ type UserDetails struct {
 	ID uuid.UUID
 	Email string
 	Name string
-	IsRestaurantOwner bool
-	IsDelivery bool
 }
 
 
@@ -42,9 +38,8 @@ func CreateToken(payload map[string]interface{}) (string, error) {
 		ID: parsedUserID,
 		Email: load.Get("email").Str(),
 		Name: load.Get("name").Str(),
-		IsAdmin: load.Get("isAdmin").Bool(),
+		IsAdmin: load.Get("is_admin").Bool(),
 		StandardClaims: jwt.StandardClaims{
-			// In JWT, the expiry time is expressed as unix milliseconds
 			ExpiresAt: expirationTime.Unix(),
 		},
 	}

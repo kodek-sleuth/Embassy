@@ -28,7 +28,6 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 	router.Handle("/chatting/{chattingID}",
 		negroni.New(
 			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
-			negroni.HandlerFunc(middlewares.RequireOwnerRights),
 			negroni.HandlerFunc(handler.Delete))).Methods("DELETE")
 	return router
 }
