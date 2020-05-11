@@ -4,7 +4,6 @@ import (
 	"Embassy/internal/helpers"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
-	uuid "github.com/satori/go.uuid"
 	"reflect"
 
 	//"github.com/sirupsen/logrus"
@@ -66,6 +65,9 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	userDetails, _ := helpers.VerifyToken(r)
 	pages.UserID = userDetails.ID
 
+	pageType := mux.Vars(r)["pageType"]
+	pages.Type = pageType
+
 	result, err := s.service.Update(&pages)
 	if err != nil{
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -78,17 +80,10 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 func (s *handler) Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var pages Pages
-	pagesID := mux.Vars(r)["pagesID"]
+	pageType := mux.Vars(r)["pageType"]
+	pages.Type = pageType
 
-	parsedPagesID, err := uuid.FromString(pagesID)
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	pages.ID = parsedPagesID
-
-	if err = s.service.Delete(&pages); err != nil {
+	if err := s.service.Delete(&pages); err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -112,15 +107,9 @@ func (s *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.Handler
 
 func (s *handler) FindById(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var pages Pages
-	pagesID := mux.Vars(r)["pagesID"]
-	parsedID, err := uuid.FromString(pagesID)
+	pageType := mux.Vars(r)["pageType"]
+	pages.Type = pageType
 
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	pages.ID = parsedID
 	result, err := s.service.FindById(&pages)
 	if err != nil {
 		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())

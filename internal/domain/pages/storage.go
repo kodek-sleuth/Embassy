@@ -25,7 +25,7 @@ func (c Connection) Create(pages *Pages) (*Pages, error) {
 
 func (c Connection) Update(pages *Pages) (*Pages, error) {
 	// Update Pages
-	if err := c.db.Model(pages).Updates(pages).Error; err != nil {
+	if err := c.db.Where("type = ?", pages.Type).Updates(pages).Error; err != nil {
 		return nil, err
 	}
 
@@ -33,7 +33,7 @@ func (c Connection) Update(pages *Pages) (*Pages, error) {
 }
 
 func (c Connection) Delete(pages *Pages) error {
-	err := c.db.Where("id = ?", pages.ID).Delete(Pages{}).Error
+	err := c.db.Where("type = ?", pages.Type).Delete(Pages{}).Error
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (c Connection) FindAll() ([]*Pages, error) {
 }
 
 func (c Connection) FindById(pages *Pages) (*Pages, error) {
-	err := c.db.Where("id = ?", pages.ID).First(&pages).Error
+	err := c.db.Where("type = ?", pages.Type).First(&pages).Error
 	if err != nil {
 		return pages, err
 	}
