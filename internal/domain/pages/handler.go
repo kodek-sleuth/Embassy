@@ -38,6 +38,7 @@ func (s *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	pages.Title = pgs.FieldByName("Title").String()
 	pages.Body = pgs.FieldByName("Body").String()
+	pages.Type = pgs.FieldByName("Type").String()
 
 	userDetails, _ := helpers.VerifyToken(r)
 	pages.UserID = userDetails.ID
@@ -60,6 +61,7 @@ func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	pages.Title = pgs.FieldByName("Title").String()
 	pages.Body = pgs.FieldByName("Body").String()
+	pages.Type = pgs.FieldByName("Type").String()
 
 	userDetails, _ := helpers.VerifyToken(r)
 	pages.UserID = userDetails.ID

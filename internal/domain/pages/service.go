@@ -2,6 +2,7 @@ package pages
 
 import (
 	//"fmt"
+	"Embassy/internal/helpers"
 	_ "github.com/satori/go.uuid"
 )
 
@@ -25,6 +26,12 @@ func NewService(repository Repository) Service {
 }
 
 func (s service) Create(pages *Pages) (*Pages, error) {
+	str, err := helpers.ParseNodes(pages.Body)
+	if err != nil{
+		return nil, err
+	}
+
+	pages.Body = str
 	result, err := s.repo.Create(pages)
 	if err != nil {
 		return result, err
@@ -33,6 +40,12 @@ func (s service) Create(pages *Pages) (*Pages, error) {
 }
 
 func (s service) Update(pages *Pages) (*Pages, error) {
+	str, err := helpers.ParseNodes(pages.Body)
+	if err != nil{
+		return nil, err
+	}
+
+	pages.Body = str
 	result, err := s.repo.Update(pages)
 	if err != nil{
 		return result, err
