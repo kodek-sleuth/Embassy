@@ -14,8 +14,8 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 	handler := NewHandler(service)
 	router.Handle("/pages",
 		negroni.New(
-			negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
-			negroni.HandlerFunc(middlewares.RequireAdminRights),
+			//negroni.HandlerFunc(middlewares.RequireTokenAuthentication),
+			//negroni.HandlerFunc(middlewares.RequireAdminRights),
 			negroni.HandlerFunc(validations.ReturnHandler(db).InputPages),
 			negroni.HandlerFunc(handler.Create))).Methods("POST")
 	router.Handle("/pages/{pageType}",

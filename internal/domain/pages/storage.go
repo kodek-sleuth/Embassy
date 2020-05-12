@@ -1,6 +1,7 @@
 package pages
 
 import (
+	"Embassy/internal/database"
 	"github.com/jinzhu/gorm"
 	//"github.com/sirupsen/logrus"
 	//"github.com/sirupsen/logrus"
@@ -17,7 +18,9 @@ func NewRepository(db *gorm.DB) Repository {
 
 func (c Connection) Create(pages *Pages) (*Pages, error) {
 	// Find type
-	err := c.db.Where("type = ?", pages.Type).First(&pages).Error
+	var page Pages
+
+	err := c.db.Where("type = ?", pages.Type).First(&page).Error
 	if err != nil{
 		// Insert into menu if not ready there
 		if err := c.db.Create(pages).Error; err != nil{
@@ -26,11 +29,21 @@ func (c Connection) Create(pages *Pages) (*Pages, error) {
 		return pages, nil
 	}
 
-	if err := c.db.Where("type = ?", pages.Type).Updates(pages).Error; err != nil {
+	if err := c.db.Model(page).Updates(pages).Error; err != nil {
 		return nil, err
 	}
 
-	return pages, nil
+	return &Pages{
+		Base:   database.Base{
+			ID:page.ID,
+			CreatedAt:page.CreatedAt,
+			UpdatedAt:page.UpdatedAt,
+		},
+		Type:   page.Type,
+		Title:  pages.Title,
+		Body:   pages.Body,
+		UserID: page.UserID,
+	}, nil
 }
 
 func (c Connection) Update(pages *Pages) (*Pages, error) {
