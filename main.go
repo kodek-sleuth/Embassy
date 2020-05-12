@@ -25,7 +25,7 @@ func main() {
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
-	logrus.Info("Server is running")
+	logrus.Info(fmt.Sprintf("Server is running on PORT  %s", os.Getenv("PORT")))
 	err := http.ListenAndServe(fmt.Sprintf(":%s", os.Getenv("PORT")),
 		handlers.CORS(originsOk, headersOk, methodsOk)(n))
 
