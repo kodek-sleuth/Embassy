@@ -16,10 +16,20 @@ func NewRepository(db *gorm.DB) Repository {
 }
 
 func (c Connection) Create(pages *Pages) (*Pages, error) {
-	// Insert into menu if not ready there
-	if err := c.db.Create(pages).Error; err != nil{
+	// Find type
+	err := c.db.Where("type = ?", pages.Type).First(&pages).Error
+	if err != nil{
+		// Insert into menu if not ready there
+		if err := c.db.Create(pages).Error; err != nil{
+			return nil, err
+		}
+		return pages, nil
+	}
+
+	if err := c.db.Where("type = ?", pages.Type).Updates(pages).Error; err != nil {
 		return nil, err
 	}
+
 	return pages, nil
 }
 
