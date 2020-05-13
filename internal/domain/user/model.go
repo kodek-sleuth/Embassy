@@ -14,6 +14,7 @@ type User struct {
 	Name string `json:"name"`
 	IsAdmin bool `gorm:"type:boolean;default:false"`
 	IsVerified bool `gorm:"type:boolean;not_null"`
+	IsRegistered bool `gorm:"type:boolean;default:false"`
 	RegistrationDetails registration.Registration
 	Pages []pages.Pages
 }

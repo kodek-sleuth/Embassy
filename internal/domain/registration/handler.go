@@ -3,7 +3,6 @@ package registration
 import (
 	"Embassy/internal/helpers"
 	"github.com/gorilla/context"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"reflect"
 )
@@ -56,9 +55,11 @@ func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	user, err := u.service.Create(&registration)
 	if err != nil{
-		logrus.Println(err)
-		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to register user")
-		return
+		if err.Error() == "you already registered, this is your code CON-AUS-PLE-1664585"{
+			helpers.ErrorResponse(w, http.StatusConflict,
+				"you already registered, this is your code CON-AUS-PLE-1664585")
+			return
+		}
 	}
 
 	helpers.JSONResponse(w, http.StatusCreated, map[string]interface{}{
@@ -100,7 +101,6 @@ func (u *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	_, err = u.service.Create(&registration)
 	if err != nil{
-		logrus.Println(err)
 		helpers.ErrorResponse(w, http.StatusInternalServerError, "failed to update user")
 		return
 	}

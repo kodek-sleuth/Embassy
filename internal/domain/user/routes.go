@@ -38,7 +38,7 @@ func Routes(router *mux.Router, db *gorm.DB) *mux.Router {
 		negroni.New(negroni.HandlerFunc(handler.GoogleCallBack))).Methods("GET")
 	router.Handle("/user",
 		negroni.New(
-			negroni.HandlerFunc(middlewares.RequireAdminRights),
+			//negroni.HandlerFunc(middlewares.RequireAdminRights),
 			negroni.HandlerFunc(handler.FindAll),
 			)).Methods("GET")
 	router.Handle("/all",
