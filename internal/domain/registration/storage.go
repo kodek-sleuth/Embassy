@@ -18,6 +18,7 @@ func (c *Connection) Create(user *Registration) (*Registration, error) {
 		if err := c.db.Create(&user).Error; err != nil {
 			return nil, err
 		}
+		return user, nil
 	}
 	return nil, fmt.Errorf(fmt.Sprintf("you already registered, this is your code %s", user.Code))
 }
