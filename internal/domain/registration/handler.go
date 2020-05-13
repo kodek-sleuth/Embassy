@@ -55,9 +55,9 @@ func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 
 	user, err := u.service.Create(&registration)
 	if err != nil{
-		if err.Error() == "you already registered, this is your code CON-AUS-PLE-1664585"{
-			helpers.ErrorResponse(w, http.StatusConflict,
-				"you already registered, this is your code CON-AUS-PLE-1664585")
+		if err.Error() != "" {
+			helpers.ErrorResponse(w, http.StatusInternalServerError,
+				err.Error())
 			return
 		}
 	}
