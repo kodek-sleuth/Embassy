@@ -62,6 +62,7 @@ func (u *handler) Create(w http.ResponseWriter, r *http.Request, n http.HandlerF
 		}
 	}
 
+	helpers.SendEmail(auth.Email, user.Code)
 	helpers.JSONResponse(w, http.StatusCreated, map[string]interface{}{
 		"message": "you have successfully registered",
 		"code": user.Code,
