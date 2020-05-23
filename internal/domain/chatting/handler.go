@@ -15,7 +15,12 @@ type Handler interface {
 	Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	Delete(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
 	FindAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
-	FindById(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
+	FindByID(w http.ResponseWriter, r *http.Request, n http.HandlerFunc)
+}
+
+type Client struct {
+	Websocket *websocket.Conn
+	UserID string
 }
 
 type handler struct {
@@ -31,7 +36,7 @@ func NewHandler(service Service) Handler {
 	}
 }
 
-var clients = make(map[*websocket.Conn]bool)
+var clients = make(map[*websocket.Conn]uuid.UUID)
 var broadcast = make(chan Chat)
 
 func HandleMessages(){
@@ -41,18 +46,28 @@ func HandleMessages(){
 
 		// Send it out to every client that is currently connected
 		for client := range clients {
-			err := client.WriteJSON(msg)
-			if err != nil {
-				logrus.Printf("error: %v", err)
-				_ = client.Close()
-				delete(clients, client)
+			logrus.Println("This is client", clients[client])
+
+			if clients[client] == msg.To {
+				err := client.WriteJSON(msg)
+				if err != nil {
+					logrus.Println("This is the err", err.Error())
+					_ = client.Close()
+					delete(clients, client)
+				}
 			}
 		}
 	}
 }
 
+
 func (s *handler) Chatting(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
 	var chat Chat
+	userID := mux.Vars(r)["userID"]
+	ids, err := helpers.ParseIDs([]string{userID})
+	if err != nil{
+		logrus.Println(err.Error())
+	}
 
 	// create handshake with client
 	var upgrader = websocket.Upgrader{
@@ -63,17 +78,19 @@ func (s *handler) Chatting(w http.ResponseWriter, r *http.Request, n http.Handle
 
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil{
-		logrus.Println(err.Error())
+		logrus.Println("Upgrade error", err.Error())
 	}
 
 	defer ws.Close()
 
-	clients[ws] = true
+	clients[ws] = ids[0]
 
 	for {
+		// Read messages from all clients
 		if err := ws.ReadJSON(&chat); err != nil{
-			logrus.Println(err.Error())
+			logrus.Println(&chat)
 			delete(clients, ws)
+			break
 		}
 
 		if _, err = s.service.Create(&chat); err != nil {
@@ -82,6 +99,43 @@ func (s *handler) Chatting(w http.ResponseWriter, r *http.Request, n http.Handle
 
 		broadcast <- chat
 	}
+}
+
+func (s *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
+	result, err := s.service.FindAll()
+	if err != nil {
+		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	helpers.JSONResponse(w, http.StatusOK, result)
+	return
+}
+
+func (s *handler) FindByID(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
+	// get messages of current user and requested users
+	var requestedUserID = mux.Vars(r)["requestedUserID"]
+	userDetails, _ := helpers.VerifyToken(r)
+
+	ids, err := helpers.ParseIDs([]string{requestedUserID})
+	if err != nil{
+		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	chat := &Chat{
+		From:ids[0] ,
+		To:userDetails.ID,
+	}
+
+	result, err := s.service.FindByID(chat)
+	if err != nil {
+		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	helpers.JSONResponse(w, http.StatusOK, result)
+	return
 }
 
 func (s *handler) Update(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
@@ -136,37 +190,6 @@ func (s *handler) Delete(w http.ResponseWriter, r *http.Request, n http.HandlerF
 	helpers.JSONResponse(w, http.StatusNoContent, map[string]string{
 		"message": "chat deleted successfully",
 	})
-	return
-}
-
-func (s *handler) FindAll(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	result, err := s.service.FindAll()
-	if err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	helpers.JSONResponse(w, http.StatusOK, result)
-	return
-}
-
-func (s *handler) FindById(w http.ResponseWriter, r *http.Request, n http.HandlerFunc){
-	var chat Chat
-	chatID := mux.Vars(r)["chatID"]
-	parsedID, err := uuid.FromString(chatID)
-	if err != nil{
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	chat.ID = parsedID
-	result, err := s.service.FindById(&chat)
-	if err != nil {
-		helpers.ErrorResponse(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	helpers.JSONResponse(w, http.StatusOK, result)
 	return
 }
 

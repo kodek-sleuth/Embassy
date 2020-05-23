@@ -5,5 +5,5 @@ type Repository interface {
 	Update(chat *Chat) (*Chat, error)
 	Delete(chat *Chat)  error
 	FindAll()([]*Chat, error)
-	FindById(chat *Chat)(*Chat, error)
+	FindByID(chat *Chat)([]*Chat, error)
 }

@@ -10,7 +10,7 @@ type Service interface {
 	Update(chat *Chat) (*Chat, error)
 	Delete(chat *Chat) error
 	FindAll()([]*Chat, error)
-	FindById(chat *Chat)(*Chat, error)
+	FindByID(chat *Chat)([]*Chat, error)
 	//CheckUser(chat *Chat) error
 }
 
@@ -56,8 +56,8 @@ func (s service) FindAll() ([]*Chat, error) {
 	return result, nil
 }
 
-func (s service) FindById(chat *Chat) (*Chat, error) {
-	result, err := s.repo.FindById(chat)
+func (s service) FindByID(chat *Chat) ([]*Chat, error) {
+	result, err := s.repo.FindByID(chat)
 	if err != nil{
 		return result, err
 	}

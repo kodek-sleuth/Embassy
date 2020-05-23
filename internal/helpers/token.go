@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	uuid "github.com/satori/go.uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/objx"
 	"net/http"
 	"os"
@@ -56,7 +55,6 @@ func VerifyToken(r *http.Request) (*Claims, error) {
 	// Initialize a new instance of `Claims`
 	claims := &Claims{}
 	tokenString := ExtractToken(r)
-	logrus.Println(os.Getenv("SECRET_KEY"))
 	tkn, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})

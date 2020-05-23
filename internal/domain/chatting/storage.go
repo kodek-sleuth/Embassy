@@ -2,6 +2,8 @@ package chatting
 
 import (
 	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
+
 	//"github.com/sirupsen/logrus"
 	//"github.com/sirupsen/logrus"
 	//uuid"github.com/satori/go.uuid"
@@ -49,11 +51,24 @@ func (c Connection) FindAll() ([]*Chat, error) {
 	return chats, nil
 }
 
-func (c Connection) FindById(chat *Chat) (*Chat, error) {
-	err := c.db.Where("id = ?", chat.ID).First(&chat).Error
+func (c Connection) FindByID(chat *Chat) ([]*Chat, error) {
+	logrus.Println("To ", chat.To)
+	logrus.Println("From ", chat.From)
+	var chats []*Chat
+	var fromChats []*Chat
+
+	err := c.db.Where(&Chat{To:chat.To, From:chat.From}).Find(&chats).Error
 	if err != nil {
-		return chat, err
+		return chats, err
 	}
-	return chat, nil
+
+	err = c.db.Where(&Chat{From:chat.To, To:chat.From,}).Find(&fromChats).Error
+	if err != nil {
+		return chats, err
+	}
+
+	chats = append(chats, fromChats...)
+
+	return chats, nil
 }
 
