@@ -124,8 +124,8 @@ func (s *handler) FindByID(w http.ResponseWriter, r *http.Request, n http.Handle
 	}
 
 	chat := &Chat{
-		From:ids[0] ,
-		To:userDetails.ID,
+		From:userDetails.ID ,
+		To:ids[0],
 	}
 
 	result, err := s.service.FindByID(chat)
